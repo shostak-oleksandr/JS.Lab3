@@ -1,31 +1,45 @@
-Aleksandr Shostak, [31.03.2022 19:54]
 <!DOCTYPE html> 
 <html> 
 <head> 
     <meta charset="utf-8" /> 
     <meta name="viewport" content="width=device-width" /> 
-    <title>Список пользователей</title> 
+    <title>Автосервіс</title> 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" /> 
+
+    <style type="text/css">
+        body{
+            margin-left: 350px;
+            margin-right: 350px;
+        }
+    </style>
 </head> 
 <body> 
-    <h2>Список пользователей</h2> 
+    <h2 align="center">Список механіків автосервісу</h2> 
     <form name="userForm"> 
         <input type="hidden" name="id" value="0" /> 
         <div class="form-group"> 
-            <label for="name">Имя:</label> 
-            <input class="form-control" name="name" /> 
+            <label for="firstname">Ім'я:</label> 
+            <input class="form-control" name="firstname" /> 
         </div> 
         <div class="form-group"> 
-            <label for="age">Возраст:</label> 
+            <label for="lastname">Прізвище:</label> 
+            <input class="form-control" name="lastname" /> 
+        </div> 
+        <div class="form-group"> 
+            <label for="age">Вік:</label> 
             <input class="form-control" name="age" /> 
         </div> 
-        <div class="panel-body"> 
-            <button type="submit" class="btn btn-sm btn-primary">Сохранить</button> 
-            <a id="reset" class="btn btn-sm btn-primary">Сбросить</a> 
+        <div class="form-group"> 
+            <label for="phone">Телефон:</label> 
+            <input class="form-control" name="phone" /> 
+        </div> 
+        <div class="panel-body" align="center"> 
+            <button type="submit" class="btn btn-sm btn-primary">Зберегти</button> 
+            <a id="reset" class="btn btn-sm btn-primary">Скинути</a> 
         </div> 
     </form> 
     <table class="table table-condensed table-striped table-bordered"> 
-        <thead><tr><th>Id</th><th>Имя</th><th>возраст</th><th></th></tr></thead> 
+        <thead><tr><th>Id</th><th>Ім'я</th><th>Прізвище</th><th>Вік</th><th>Телефон</th><th></th></tr></thead> 
         <tbody> 
         </tbody> 
     </table> 
@@ -34,7 +48,7 @@ Aleksandr Shostak, [31.03.2022 19:54]
     // Получение всех пользователей 
         async function GetUsers() { 
             // отправляет запрос и получаем ответ 
-            const response = await fetch("/api/users", { 
+            const response = await fetch("/api/masters", { 
                 method: "GET", 
                 headers: { "Accept": "application/json" } 
             }); 
@@ -51,7 +65,7 @@ Aleksandr Shostak, [31.03.2022 19:54]
         } 
         // Получение одного пользователя 
         async function GetUser(id) { 
-            const response = await fetch("/api/users/" + id, { 
+            const response = await fetch("/api/masters/" + id, { 
                 method: "GET", 
                 headers: { "Accept": "application/json" } 
             }); 
@@ -59,19 +73,23 @@ Aleksandr Shostak, [31.03.2022 19:54]
                 const user = await response.json(); 
                 const form = document.forms["userForm"]; 
                 form.elements["id"].value = user._id; 
-                form.elements["name"].value = user.name; 
+                form.elements["firstname"].value = user.firstname; 
+                form.elements["lastname"].value = user.lastname;
                 form.elements["age"].value = user.age; 
+                form.elements["phone"].value = user.phone;
             } 
         } 
         // Добавление пользователя 
-        async function CreateUser(userName, userAge) { 
+        async function CreateUser(firstName, lastName, age, phone) { 
    
-            const response = await fetch("api/users", { 
+            const response = await fetch("api/masters", { 
                 method: "POST", 
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }, 
                 body: JSON.stringify({ 
-                    name: userName, 
-                    age: parseInt(userAge, 10) 
+                    firstname: firstName, 
+                    lastname: lastName,
+                    age: parseInt(age, 10),
+                    phone: parseInt(phone, 10) 
                 }) 
             }); 
             if (response.ok === true) { 
@@ -82,13 +100,15 @@ Aleksandr Shostak, [31.03.2022 19:54]
         } 
         // Изменение пользователя 
         async function EditUser(userId, userName, userAge) { 
-            const response = await fetch("api/users", { 
+            const response = await fetch("api/maasters", { 
                 method: "PUT", 
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }, 
                 body: JSON.stringify({ 
                     id: userId, 
-                    name: userName, 
-                    age: parseInt(userAge, 10) 
+                    firstname: firstName, 
+                    lastname: lastName,
+                    age: parseInt(age, 10),
+                    phone: parseInt(phone, 10)  
                 }) 
             }); 
             if (response.ok === true) { 
@@ -100,7 +120,7 @@ Aleksandr Shostak, [31.03.2022 19:54]
         } 
         // Удаление пользователя 
         async function DeleteUser(id) { 
-            const response = await fetch("/api/users/" + id, { 
+            const response = await fetch("/api/masters/" + id, { 
                 method: "DELETE", 
                 headers: { "Accept": "application/json" } 
             }); 
@@ -126,20 +146,28 @@ Aleksandr Shostak, [31.03.2022 19:54]
             idTd.append(user._id); 
             tr.append(idTd); 
    
-            const nameTd = document.createElement("td"); 
-            nameTd.append(user.name); 
-            tr.append(nameTd); 
+            const firtsNameTd = document.createElement("td"); 
+            firtsNameTd.append(user.firstname); 
+            tr.append(firtsNameTd); 
+
+            const lastNameTd = document.createElement("td"); 
+            lastNameTd.append(user.lastname); 
+            tr.append(lastNameTd);
    
             const ageTd = document.createElement("td"); 
             ageTd.append(user.age); 
             tr.append(ageTd); 
                
+            const phoneTd = document.createElement("td"); 
+            phoneTd.append(user.phone); 
+            tr.append(phoneTd);
+
             const linksTd = document.createElement("td"); 
    
             const editLink = document.createElement("a"); 
             editLink.setAttribute("data-id", user._id); 
             editLink.setAttribute("style", "cursor:pointer;padding:15px;"); 
-            editLink.append("Изменить"); 
+            editLink.append("Змінити"); 
             editLink.addEventListener("click", e => { 
    
                 e.preventDefault(); 
@@ -150,7 +178,7 @@ Aleksandr Shostak, [31.03.2022 19:54]
             const removeLink = document.createElement("a"); 
             removeLink.setAttribute("data-id", user._id); 
             removeLink.setAttribute("style", "cursor:pointer;padding:15px;"); 
-            removeLink.append("Удалить"); 
+            removeLink.append("Видалити"); 
             removeLink.addEventListener("click", e => { 
    
                 e.preventDefault(); 
@@ -172,14 +200,18 @@ Aleksandr Shostak, [31.03.2022 19:54]
         // отправка формы 
         document.forms["userForm"].addEventListener("submit", e => { 
             e.preventDefault(); 
-            const form = document.forms["userForm"]; 
+            const form = document.forms["userForm"];
+
             const id = form.elements["id"].value; 
-            const name = form.elements["name"].value; 
-            const age = form.elements["age"].value; 
+            const firstName = form.elements["firstname"].value;
+            const lastName = form.elements["lastname"].value; 
+            const age = form.elements["age"].value;
+            const phone = form.elements["phone"].value; 
+
             if (id == 0) 
-                CreateUser(name, age); 
+                CreateUser(firstName, lastName, age, phone); 
             else 
-                EditUser(id, name, age); 
+                EditUser(id, firstName, lastName, age, phone); 
         }); 
    
         // загрузка пользователей 
